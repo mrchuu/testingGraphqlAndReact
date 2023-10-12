@@ -1,23 +1,41 @@
-import logo from './logo.svg';
-import './App.css';
+import logo from "./logo.svg";
+import "./App.css";
+import { useQuery, gql } from "@apollo/client";
+const blogQuery = gql`{
+  query($input:BlogDisplayInput) {
+    getBlogsPaginated(input:$input){
+      title
+      content
+      blogId
+      postDate
+      poster{
+        userName
+      }
+    }
+  }
+}`;
 
 function App() {
+  const {data, loading, error} = useQuery(blogQuery);
+  if(loading) return "Loading";
+  if(error) return <pre>{error.message}</pre>
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <h1>Blogs List</h1>
+      <ul>
+        {
+          data.getBlogsPaginated.map((blog)=>(
+            <li key={blog.blogId}>
+              <pre>
+                {blog.blogId}
+                {blog.title}
+                {blog.content}
+                {}
+              </pre>
+            </li>
+          ))
+        }
+      </ul>
     </div>
   );
 }
